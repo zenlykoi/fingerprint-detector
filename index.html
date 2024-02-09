@@ -1,0 +1,83 @@
+<html>
+  <head>
+    <script src="./fingerprint.js"></script>
+  </head>
+  <body>
+    <h1>FingerPrint detector</h1>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>No.</th>
+          <th>Property</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Canvas</td>
+          <td id="canvas_display"><img /></td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Canvas hash</td>
+          <td id="canvas_hash"></td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>UserAgent data</td>
+          <td id="useragent_data" style="white-space:pre"></td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Jsbd</td>
+          <td id="jsbd"></td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>FE</td>
+          <td id="fe" style="white-space:pre"></td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Enhanced FP</td>
+          <td id="enhanced_fp" style="white-space:pre"></td>
+        </tr>
+      </tbody>
+    </table>
+    <script>
+      function displayCanvas(canvasData) {
+        const base64Imgae = canvasData.replace('canvas winding:yes~canvas fp:', '');
+        document.querySelector('#canvas_display img').src = base64Imgae;
+      }
+
+      function displayCanvasHash(canvasHash) {
+        document.querySelector('#canvas_hash').innerHTML = canvasHash;
+      }
+
+      function displayUseragentData() {
+        document.querySelector('#useragent_data').innerHTML = Object.keys(navigator.userAgentData.toJSON()).map(key => {
+          return `${key}: ${JSON.stringify(navigator.userAgentData[key])}`;
+        }).join('\n');
+      }
+
+      function handleAllFp(fpData) {
+        console.log(fpData);
+
+        const jsbd = fpData.find(fp => fp.key == 'jsbd').value;
+        const fe = fpData.find(fp => fp.key == 'fe').value;
+        const enhanced_fp = fpData.find(fp => fp.key == 'enhanced_fp').value;
+
+        document.querySelector('#jsbd').innerHTML = jsbd;
+        document.querySelector('#fe').innerHTML = fe.join('\n');
+        document.querySelector('#enhanced_fp').innerHTML = enhanced_fp.map(fp => `${fp.key}: ${JSON.stringify(fp.value)}`).join('\n');
+      }
+
+      async function main() {
+        displayUseragentData();
+      }
+
+      main();
+    </script>
+  </body>
+</html>
