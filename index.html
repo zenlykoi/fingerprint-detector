@@ -3,7 +3,7 @@
     <script src="./fingerprint.js"></script>
   </head>
   <body>
-    <h1>FingerPrint detector</h1>
+    <h1>Fingerprint detector</h1>
     <table border="1">
       <thead>
         <tr>
@@ -13,6 +13,11 @@
         </tr>
       </thead>
       <tbody>
+        <tr>
+          <td>0</td>
+          <td>Enforcement</td>
+          <td id="enforcement">2.4.0</td>
+        </tr>
         <tr>
           <td>1</td>
           <td>Canvas</td>
@@ -46,35 +51,38 @@
       </tbody>
     </table>
     <script>
-      function displayCanvas(canvasData) {
-        const base64Imgae = canvasData.replace('canvas winding:yes~canvas fp:', '');
-        document.querySelector('#canvas_display img').src = base64Imgae;
-      }
+      const HandleFingerprint = {
+        displayCanvas: function(canvasData) {
+          const base64Imgae = canvasData.replace('canvas winding:yes~canvas fp:', '');
+          document.querySelector('#canvas_display img').src = base64Imgae;
+        },
+        displayCanvasHash: function(canvasHash) {
+          document.querySelector('#canvas_hash').innerHTML = canvasHash;
+        },
+        displayUseragentData: function() {
+          const useragentDatas = Object.keys(navigator.userAgentData.toJSON()).map(key => {
+            return `${key}: ${JSON.stringify(navigator.userAgentData[key])}`;
+          });
 
-      function displayCanvasHash(canvasHash) {
-        document.querySelector('#canvas_hash').innerHTML = canvasHash;
-      }
+          useragentDatas.push(`Useragent: ${navigator.userAgent}`);
 
-      function displayUseragentData() {
-        document.querySelector('#useragent_data').innerHTML = Object.keys(navigator.userAgentData.toJSON()).map(key => {
-          return `${key}: ${JSON.stringify(navigator.userAgentData[key])}`;
-        }).join('\n');
-      }
+          document.querySelector('#useragent_data').innerHTML = useragentDatas.join('\n');
+        },
+        handleAllFp: function(fpData) {
+          console.log(fpData);
 
-      function handleAllFp(fpData) {
-        console.log(fpData);
+          const jsbd = fpData.find(fp => fp.key == 'jsbd').value;
+          const fe = fpData.find(fp => fp.key == 'fe').value;
+          const enhanced_fp = fpData.find(fp => fp.key == 'enhanced_fp').value;
 
-        const jsbd = fpData.find(fp => fp.key == 'jsbd').value;
-        const fe = fpData.find(fp => fp.key == 'fe').value;
-        const enhanced_fp = fpData.find(fp => fp.key == 'enhanced_fp').value;
-
-        document.querySelector('#jsbd').innerHTML = jsbd;
-        document.querySelector('#fe').innerHTML = fe.join('\n');
-        document.querySelector('#enhanced_fp').innerHTML = enhanced_fp.map(fp => `${fp.key}: ${JSON.stringify(fp.value)}`).join('\n');
+          document.querySelector('#jsbd').innerHTML = jsbd;
+          document.querySelector('#fe').innerHTML = fe.join('\n');
+          document.querySelector('#enhanced_fp').innerHTML = enhanced_fp.map(fp => `${fp.key}: ${JSON.stringify(fp.value)}`).join('\n');
+        }
       }
 
       async function main() {
-        displayUseragentData();
+        HandleFingerprint.displayUseragentData();
       }
 
       main();
